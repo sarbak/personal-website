@@ -1,0 +1,1 @@
+/Users/emresarbak/projects/AGENTS.md
