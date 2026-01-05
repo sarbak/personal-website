@@ -158,7 +158,7 @@
         }
         if (d < 20) {
           crumb.strength -= 0.03;
-          boid.energy = Math.min(boid.energy + 0.05, 5.0);  // Gain energy from eating
+          boid.energy = Math.min(boid.energy + 0.15, 5.0);  // Gain energy from eating
         }
       });
 
