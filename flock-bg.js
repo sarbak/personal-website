@@ -4,9 +4,9 @@
 (function() {
   const FONT = '11px JetBrains Mono';
 
-  // Color palettes - neutral and warm (when mouse active)
+  // Color palettes - neutral and warm (Bauhaus yellow when attracted)
   const COLORS_NEUTRAL = ['#bbb', '#999', '#777', '#555', '#444'];
-  const COLORS_WARM = ['#bbb', '#a99', '#997755', '#aa8844', '#cca030'];
+  const COLORS_WARM = ['#cca', '#cc9', '#ddaa00', '#eebb00', '#ffcc00'];
 
   // Mouse activity tracking
   let mouseActivity = 0;
@@ -307,7 +307,7 @@
 
     // Draw crumbs as ASCII
     const crumbChars = '✦*°·';
-    ctx.fillStyle = '#d4a24a';
+    ctx.fillStyle = '#ffcc00';
     ctx.globalAlpha = 1;
     crumbs.forEach(crumb => {
       const charIdx = Math.min(Math.floor((1 - crumb.strength) * crumbChars.length), crumbChars.length - 1);
