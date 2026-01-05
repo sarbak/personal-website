@@ -244,12 +244,29 @@
       }
     });
 
-    // Remove dead boids
+    // Remove dead boids and reproduce well-fed ones
+    const newBoids = [];
     for (let i = boids.length - 1; i >= 0; i--) {
       if (boids[i].energy <= 0) {
         boids.splice(i, 1);
+      } else if (boids[i].energy > 3.0 && Math.random() < 0.002 && boids.length < 150) {
+        // Well-fed boids can reproduce
+        const parent = boids[i];
+        parent.energy -= 1.5;  // Cost of reproduction
+        newBoids.push({
+          x: parent.x + (Math.random() - 0.5) * 20,
+          y: parent.y + (Math.random() - 0.5) * 20,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          restTimer: Math.random() * 200,
+          isResting: false,
+          boredom: 0,
+          wanderAngle: Math.random() * Math.PI * 2,
+          energy: 0.8
+        });
       }
     }
+    boids.push(...newBoids);
   }
 
   function blendColors(neutral, warm, t) {
