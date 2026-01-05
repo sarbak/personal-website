@@ -74,7 +74,8 @@
         restTimer: Math.random() * 200,
         isResting: Math.random() > 0.5,
         boredom: 0,
-        wanderAngle: Math.random() * Math.PI * 2
+        wanderAngle: Math.random() * Math.PI * 2,
+        energy: 0.5 + Math.random() * 0.5  // Start with some energy
       });
     }
   }
@@ -155,7 +156,10 @@
           crumbPullY += (dy / d) * pull;
           isAttracted = true;
         }
-        if (d < 20) crumb.strength -= 0.03;
+        if (d < 20) {
+          crumb.strength -= 0.03;
+          boid.energy = Math.min(boid.energy + 0.02, 2.0);  // Gain energy from eating
+        }
       });
 
       // Long-range attraction to nearest crumb (weaker but farther)
@@ -226,16 +230,26 @@
       if (boid.y < 0) boid.y += h;
       if (boid.y >= h) boid.y -= h;
 
-      // Add to density (and warmth if attracted)
+      // Slowly lose energy
+      boid.energy -= 0.0003;
+
+      // Add to density based on energy (and warmth if attracted)
       const gx = Math.floor(boid.x / cellW);
       const gy = Math.floor(boid.y / cellH);
       if (gx >= 0 && gx < COLS && gy >= 0 && gy < ROWS) {
-        density[gy][gx] = Math.min(density[gy][gx] + 0.25, 1);
+        density[gy][gx] = Math.min(density[gy][gx] + 0.15 * boid.energy, 1);
         if (isAttracted) {
           warmth[gy][gx] = Math.min(warmth[gy][gx] + 0.4, 1);
         }
       }
     });
+
+    // Remove dead boids
+    for (let i = boids.length - 1; i >= 0; i--) {
+      if (boids[i].energy <= 0) {
+        boids.splice(i, 1);
+      }
+    }
   }
 
   function blendColors(neutral, warm, t) {
