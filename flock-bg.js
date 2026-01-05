@@ -1,5 +1,5 @@
 /**
- * Flocking background - left and right panels as continuous space
+ * Flocking background - right panel only (left-aligned layout)
  */
 (function() {
   const FONT = '11px JetBrains Mono';
@@ -11,65 +11,50 @@
   // Mouse activity tracking
   let mouseActivity = 0;
 
-  const leftCanvas = document.getElementById('flock-left');
-  const rightCanvas = document.getElementById('flock-right');
-  if (!leftCanvas || !rightCanvas) return;
+  const canvas = document.getElementById('flock-right');
+  if (!canvas) return;
 
-  const leftCtx = leftCanvas.getContext('2d');
-  const rightCtx = rightCanvas.getContext('2d');
-
-  let leftW, leftH, rightW, rightH, totalW, h;
+  const ctx = canvas.getContext('2d');
+  let w, h;
 
   // Grid settings
-  const COLS_PER_PANEL = 25;
+  const COLS = 30;
   let ROWS, cellW, cellH;
-  let leftDensity = [];
-  let rightDensity = [];
+  let density = [];
 
-  // Shared boids across both panels
+  // Boids
   const boids = [];
-  const NUM_BOIDS = 80;
+  const NUM_BOIDS = 60;
 
-  // Mouse position in combined coordinate space
-  let mouseX = -1000, mouseY = -1000;
-
-  // Crumbs left by mouse - boids are attracted to these
+  // Crumbs left by mouse
   const crumbs = [];
+
+  // Mouse position
+  let mouseX = -1000, mouseY = -1000;
+  let lastMouseX = -1000, lastMouseY = -1000;
 
   function resize() {
     const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    w = rect.width;
+    h = rect.height;
+    if (w === 0 || h === 0) return;
 
-    const leftRect = leftCanvas.getBoundingClientRect();
-    const rightRect = rightCanvas.getBoundingClientRect();
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
 
-    leftW = leftRect.width;
-    leftH = leftRect.height;
-    rightW = rightRect.width;
-    rightH = rightRect.height;
-    h = leftH;
-    totalW = leftW + rightW;
-
-    leftCanvas.width = leftW * dpr;
-    leftCanvas.height = leftH * dpr;
-    leftCtx.scale(dpr, dpr);
-
-    rightCanvas.width = rightW * dpr;
-    rightCanvas.height = rightH * dpr;
-    rightCtx.scale(dpr, dpr);
-
-    cellW = leftW / COLS_PER_PANEL;
+    cellW = w / COLS;
     cellH = cellW;
     ROWS = Math.ceil(h / cellH);
 
-    // Reset density grids
-    leftDensity = [];
-    rightDensity = [];
+    // Reset density grid
+    density = [];
     for (let y = 0; y < ROWS; y++) {
-      leftDensity[y] = [];
-      rightDensity[y] = [];
-      for (let x = 0; x < COLS_PER_PANEL; x++) {
-        leftDensity[y][x] = 0;
-        rightDensity[y][x] = 0;
+      density[y] = [];
+      for (let x = 0; x < COLS; x++) {
+        density[y][x] = 0;
       }
     }
   }
@@ -78,7 +63,7 @@
     boids.length = 0;
     for (let i = 0; i < NUM_BOIDS; i++) {
       boids.push({
-        x: Math.random() * totalW,
+        x: Math.random() * w,
         y: Math.random() * h,
         vx: (Math.random() - 0.5) * 0.3,
         vy: (Math.random() - 0.5) * 0.3,
@@ -90,112 +75,48 @@
     }
   }
 
-  // Find empty regions to explore
-  function findEmptyDirection(boid) {
-    let bestAngle = boid.wanderAngle;
-    let lowestDensity = 1;
-
-    // Sample 8 directions
-    for (let i = 0; i < 8; i++) {
-      const angle = (i / 8) * Math.PI * 2;
-      const checkDist = 80;
-      const checkX = boid.x + Math.cos(angle) * checkDist;
-      const checkY = boid.y + Math.sin(angle) * checkDist;
-
-      // Wrap coordinates
-      const wrappedX = ((checkX % totalW) + totalW) % totalW;
-      const wrappedY = ((checkY % h) + h) % h;
-
-      // Check density at that location
-      let density = 0;
-      if (wrappedX < leftW) {
-        const gx = Math.floor(wrappedX / cellW);
-        const gy = Math.floor(wrappedY / cellH);
-        if (gx >= 0 && gx < COLS_PER_PANEL && gy >= 0 && gy < ROWS) {
-          density = leftDensity[gy][gx];
-        }
-      } else {
-        const gx = Math.floor((wrappedX - leftW) / cellW);
-        const gy = Math.floor(wrappedY / cellH);
-        if (gx >= 0 && gx < COLS_PER_PANEL && gy >= 0 && gy < ROWS) {
-          density = rightDensity[gy][gx];
-        }
-      }
-
-      if (density < lowestDensity) {
-        lowestDensity = density;
-        bestAngle = angle;
-      }
-    }
-
-    return bestAngle;
-  }
-
-  // Track mouse in combined coordinate space
-  let lastMouseX = -1000, lastMouseY = -1000;
-
   document.addEventListener('mousemove', e => {
-    const leftRect = leftCanvas.getBoundingClientRect();
-    const rightRect = rightCanvas.getBoundingClientRect();
+    const rect = canvas.getBoundingClientRect();
+    if (e.clientX >= rect.left && e.clientX <= rect.right &&
+        e.clientY >= rect.top && e.clientY <= rect.bottom) {
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
 
-    // Check if mouse is over left panel
-    if (e.clientX >= leftRect.left && e.clientX <= leftRect.right &&
-        e.clientY >= leftRect.top && e.clientY <= leftRect.bottom) {
-      mouseX = e.clientX - leftRect.left;
-      mouseY = e.clientY - leftRect.top;
-    }
-    // Check if mouse is over right panel
-    else if (e.clientX >= rightRect.left && e.clientX <= rightRect.right &&
-             e.clientY >= rightRect.top && e.clientY <= rightRect.bottom) {
-      mouseX = leftW + (e.clientX - rightRect.left);
-      mouseY = e.clientY - rightRect.top;
-    }
-    else {
-      mouseX = -1000;
-      mouseY = -1000;
-    }
-
-    // Detect movement to boost activity and drop crumbs
-    if (mouseX >= 0) {
       const moved = Math.abs(mouseX - lastMouseX) + Math.abs(mouseY - lastMouseY);
       if (moved > 2) {
         mouseActivity = Math.min(1, mouseActivity + 0.15);
-        // Drop a crumb
         if (moved > 8) {
           crumbs.push({ x: mouseX, y: mouseY, strength: 1.0 });
-          // Limit crumb count
           if (crumbs.length > 50) crumbs.shift();
         }
       }
       lastMouseX = mouseX;
       lastMouseY = mouseY;
+    } else {
+      mouseX = -1000;
+      mouseY = -1000;
     }
   });
 
   function step() {
-    // Decay mouse activity
+    if (w === 0) return;
+
     mouseActivity *= 0.985;
 
     // Decay crumbs
     for (let i = crumbs.length - 1; i >= 0; i--) {
       crumbs[i].strength *= 0.995;
-      if (crumbs[i].strength < 0.01) {
-        crumbs.splice(i, 1);
-      }
+      if (crumbs[i].strength < 0.01) crumbs.splice(i, 1);
     }
 
     // Decay density
     for (let y = 0; y < ROWS; y++) {
-      for (let x = 0; x < COLS_PER_PANEL; x++) {
-        leftDensity[y][x] *= 0.92;
-        rightDensity[y][x] *= 0.92;
+      for (let x = 0; x < COLS; x++) {
+        density[y][x] *= 0.92;
       }
     }
 
     boids.forEach(boid => {
-      let sepX = 0, sepY = 0, sepCount = 0;
-      let alignX = 0, alignY = 0, alignCount = 0;
-      let cohX = 0, cohY = 0, cohCount = 0;
       let isAttracted = false;
 
       // Attract to crumbs and eat them
@@ -210,10 +131,7 @@
           crumbPullY += (dy / d) * pull;
           isAttracted = true;
         }
-        // Eat crumb when close
-        if (d < 15) {
-          crumb.strength -= 0.02;
-        }
+        if (d < 15) crumb.strength -= 0.02;
       });
 
       if (isAttracted) {
@@ -222,99 +140,41 @@
         boid.vy += crumbPullY * 0.03;
       }
 
-      {
-        // Count nearby neighbors first
-        let neighborCount = 0;
-        boids.forEach(other => {
-          if (other === boid) return;
-          let dx = other.x - boid.x;
-          if (Math.abs(dx) > totalW / 2) dx = dx > 0 ? dx - totalW : dx + totalW;
-          const dy = other.y - boid.y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 60) neighborCount++;
-        });
+      // Flocking behavior
+      let sepX = 0, sepY = 0, sepCount = 0;
+      let alignX = 0, alignY = 0, alignCount = 0;
+      let cohX = 0, cohY = 0, cohCount = 0;
 
-        // Boredom increases when stationary or in crowded areas
-        const currentSpeed = Math.sqrt(boid.vx ** 2 + boid.vy ** 2);
-        if (currentSpeed < 0.1 || neighborCount > 4) {
-          boid.boredom += 0.5;
-        } else {
-          boid.boredom = Math.max(0, boid.boredom - 0.1);
+      boids.forEach(other => {
+        if (other === boid) return;
+        const dx = other.x - boid.x;
+        const dy = other.y - boid.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+
+        if (d < 25) { sepX -= dx / (d + 1); sepY -= dy / (d + 1); sepCount++; }
+        if (d < 60) { alignX += other.vx; alignY += other.vy; alignCount++; }
+        if (d < 100) { cohX += dx; cohY += dy; cohCount++; }
+      });
+
+      if (!boid.isResting) {
+        if (sepCount > 0) { boid.vx += sepX * 0.02; boid.vy += sepY * 0.02; }
+        if (alignCount > 0) { boid.vx += (alignX / alignCount - boid.vx) * 0.015; boid.vy += (alignY / alignCount - boid.vy) * 0.015; }
+        if (cohCount > 0) { boid.vx += (cohX / cohCount) * 0.0005; boid.vy += (cohY / cohCount) * 0.0005; }
+
+        if (Math.random() < 0.002) {
+          boid.wanderAngle += (Math.random() - 0.5) * 1.5;
+          boid.vx += Math.cos(boid.wanderAngle) * 0.15;
+          boid.vy += Math.sin(boid.wanderAngle) * 0.15;
         }
+      } else {
+        boid.vx *= 0.95;
+        boid.vy *= 0.95;
+      }
 
-        // When bored enough, seek empty spaces
-        const isBored = boid.boredom > 100;
-        if (isBored) {
-          boid.isResting = false;
-          boid.wanderAngle = findEmptyDirection(boid);
-          // Move towards empty space
-          boid.vx += Math.cos(boid.wanderAngle) * 0.08;
-          boid.vy += Math.sin(boid.wanderAngle) * 0.08;
-          // Reset boredom gradually
-          boid.boredom -= 2;
-        }
-
-        boid.restTimer--;
-        if (boid.restTimer <= 0) {
-          boid.isResting = !boid.isResting;
-          boid.restTimer = 100 + Math.random() * 300;
-        }
-
-        if (!boid.isResting && !isBored) {
-          boids.forEach(other => {
-            if (other === boid) return;
-
-            // Handle wraparound distance
-            let dx = other.x - boid.x;
-            let dy = other.y - boid.y;
-
-            // Check if wrapping gives shorter distance
-            if (Math.abs(dx) > totalW / 2) {
-              dx = dx > 0 ? dx - totalW : dx + totalW;
-            }
-
-            const d = Math.sqrt(dx * dx + dy * dy);
-
-            if (d < 25) {
-              sepX -= dx / (d + 1);
-              sepY -= dy / (d + 1);
-              sepCount++;
-            }
-            if (d < 60) {
-              alignX += other.vx;
-              alignY += other.vy;
-              alignCount++;
-            }
-            if (d < 100) {
-              cohX += dx;
-              cohY += dy;
-              cohCount++;
-            }
-          });
-
-          if (sepCount > 0) {
-            boid.vx += sepX * 0.02;
-            boid.vy += sepY * 0.02;
-          }
-          if (alignCount > 0) {
-            boid.vx += (alignX / alignCount - boid.vx) * 0.015;
-            boid.vy += (alignY / alignCount - boid.vy) * 0.015;
-          }
-          if (cohCount > 0) {
-            boid.vx += (cohX / cohCount) * 0.0005;
-            boid.vy += (cohY / cohCount) * 0.0005;
-          }
-
-          // Occasional random wander impulse
-          if (Math.random() < 0.002) {
-            boid.wanderAngle += (Math.random() - 0.5) * 1.5;
-            boid.vx += Math.cos(boid.wanderAngle) * 0.15;
-            boid.vy += Math.sin(boid.wanderAngle) * 0.15;
-          }
-        } else if (boid.isResting && !isBored) {
-          boid.vx *= 0.95;
-          boid.vy *= 0.95;
-        }
+      boid.restTimer--;
+      if (boid.restTimer <= 0) {
+        boid.isResting = !boid.isResting;
+        boid.restTimer = 100 + Math.random() * 300;
       }
 
       // Speed limits
@@ -325,41 +185,24 @@
         boid.vy = (boid.vy / speed) * maxSpeed;
       }
 
-      // Gradual slowdown
-      if (!isAttracted && speed > 0.7) {
-        boid.vx *= 0.97;
-        boid.vy *= 0.97;
-      }
-
       boid.x += boid.vx;
       boid.y += boid.vy;
 
-      // Wrap horizontally across combined space
-      if (boid.x < 0) boid.x += totalW;
-      if (boid.x >= totalW) boid.x -= totalW;
-
-      // Wrap vertically
+      // Wrap
+      if (boid.x < 0) boid.x += w;
+      if (boid.x >= w) boid.x -= w;
       if (boid.y < 0) boid.y += h;
       if (boid.y >= h) boid.y -= h;
 
-      // Add to appropriate density grid
-      if (boid.x < leftW) {
-        const gx = Math.floor(boid.x / cellW);
-        const gy = Math.floor(boid.y / cellH);
-        if (gx >= 0 && gx < COLS_PER_PANEL && gy >= 0 && gy < ROWS) {
-          leftDensity[gy][gx] = Math.min(leftDensity[gy][gx] + 0.25, 1);
-        }
-      } else {
-        const gx = Math.floor((boid.x - leftW) / cellW);
-        const gy = Math.floor(boid.y / cellH);
-        if (gx >= 0 && gx < COLS_PER_PANEL && gy >= 0 && gy < ROWS) {
-          rightDensity[gy][gx] = Math.min(rightDensity[gy][gx] + 0.25, 1);
-        }
+      // Add to density
+      const gx = Math.floor(boid.x / cellW);
+      const gy = Math.floor(boid.y / cellH);
+      if (gx >= 0 && gx < COLS && gy >= 0 && gy < ROWS) {
+        density[gy][gx] = Math.min(density[gy][gx] + 0.25, 1);
       }
     });
   }
 
-  // Blend two hex colors
   function blendColors(neutral, warm, t) {
     const n = parseInt(neutral.slice(1), 16);
     const w = parseInt(warm.slice(1), 16);
@@ -371,7 +214,10 @@
     return `rgb(${r},${g},${b})`;
   }
 
-  function drawPanel(ctx, density, w, isLeft) {
+  function draw() {
+    if (w === 0) { requestAnimationFrame(draw); return; }
+
+    step();
     ctx.clearRect(0, 0, w, h);
     ctx.font = FONT;
     ctx.textAlign = 'center';
@@ -380,45 +226,28 @@
     const chars = ' .·:∘∙°˚*✦~';
 
     for (let y = 0; y < ROWS; y++) {
-      for (let x = 0; x < COLS_PER_PANEL; x++) {
+      for (let x = 0; x < COLS; x++) {
         const val = density[y][x];
         if (val > 0.03) {
           const charIdx = Math.min(Math.floor(val * chars.length), chars.length - 1);
           const colorIdx = Math.min(Math.floor(val * COLORS_NEUTRAL.length), COLORS_NEUTRAL.length - 1);
-          const color = blendColors(COLORS_NEUTRAL[colorIdx], COLORS_WARM[colorIdx], mouseActivity);
-          ctx.fillStyle = color;
+          ctx.fillStyle = blendColors(COLORS_NEUTRAL[colorIdx], COLORS_WARM[colorIdx], mouseActivity);
           ctx.globalAlpha = Math.min(val * 1.5 + 0.3, 0.9);
           ctx.fillText(chars[charIdx], x * cellW + cellW / 2, y * cellH + cellH / 2);
         }
       }
     }
 
-    // Draw crumbs as yellow dots
+    // Draw crumbs
     crumbs.forEach(crumb => {
-      let crumbX = crumb.x;
-      // Check if crumb is in this panel
-      if (isLeft && crumbX < leftW) {
-        ctx.fillStyle = '#d4a24a';
-        ctx.globalAlpha = crumb.strength * 0.8;
-        ctx.beginPath();
-        ctx.arc(crumbX, crumb.y, 3 + crumb.strength * 2, 0, Math.PI * 2);
-        ctx.fill();
-      } else if (!isLeft && crumbX >= leftW) {
-        ctx.fillStyle = '#d4a24a';
-        ctx.globalAlpha = crumb.strength * 0.8;
-        ctx.beginPath();
-        ctx.arc(crumbX - leftW, crumb.y, 3 + crumb.strength * 2, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      ctx.fillStyle = '#d4a24a';
+      ctx.globalAlpha = crumb.strength * 0.8;
+      ctx.beginPath();
+      ctx.arc(crumb.x, crumb.y, 3 + crumb.strength * 2, 0, Math.PI * 2);
+      ctx.fill();
     });
 
     ctx.globalAlpha = 1;
-  }
-
-  function draw() {
-    step();
-    drawPanel(leftCtx, leftDensity, leftW, true);
-    drawPanel(rightCtx, rightDensity, rightW, false);
     requestAnimationFrame(draw);
   }
 
@@ -426,10 +255,5 @@
   initBoids();
   draw();
 
-  window.addEventListener('resize', () => {
-    const dpr = window.devicePixelRatio || 1;
-    leftCtx.setTransform(1, 0, 0, 1, 0, 0);
-    rightCtx.setTransform(1, 0, 0, 1, 0, 0);
-    resize();
-  });
+  window.addEventListener('resize', resize);
 })();

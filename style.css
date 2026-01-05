@@ -31,13 +31,13 @@ body {
 }
 
 .flock-left {
-  left: 0;
-  width: calc((100vw - var(--content-width)) / 2);
+  display: none;
 }
 
 .flock-right {
+  left: calc(var(--content-width) + 6rem);
   right: 0;
-  width: calc((100vw - var(--content-width)) / 2);
+  width: calc(100vw - var(--content-width) - 6rem);
 }
 
 /* Main content area */
