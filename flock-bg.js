@@ -203,8 +203,8 @@
           boid.vy += Math.sin(boid.wanderAngle) * 0.15;
         }
       } else {
-        boid.vx *= 0.95;
-        boid.vy *= 0.95;
+        boid.vx *= 0.85;
+        boid.vy *= 0.85;
       }
 
       boid.restTimer--;
@@ -213,9 +213,15 @@
         boid.restTimer = 100 + Math.random() * 300;
       }
 
+      // Calm down when not attracted
+      if (!isAttracted) {
+        boid.vx *= 0.98;
+        boid.vy *= 0.98;
+      }
+
       // Speed limits
       const speed = Math.sqrt(boid.vx ** 2 + boid.vy ** 2);
-      const maxSpeed = isAttracted ? 1.2 : 0.6;
+      const maxSpeed = isAttracted ? 1.2 : 0.5;
       if (speed > maxSpeed) {
         boid.vx = (boid.vx / speed) * maxSpeed;
         boid.vy = (boid.vy / speed) * maxSpeed;
