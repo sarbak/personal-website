@@ -134,18 +134,37 @@
 
       // Attract to crumbs and eat them
       let crumbPullX = 0, crumbPullY = 0;
+      let nearestCrumbDist = Infinity;
+      let nearestCrumbDx = 0, nearestCrumbDy = 0;
+
       crumbs.forEach(crumb => {
         const dx = crumb.x - boid.x;
         const dy = crumb.y - boid.y;
         const d = Math.sqrt(dx * dx + dy * dy);
-        if (d < 200 && d > 5) {
-          const pull = crumb.strength * (200 - d) / 200;
+
+        // Track nearest crumb for long-range attraction
+        if (d < nearestCrumbDist) {
+          nearestCrumbDist = d;
+          nearestCrumbDx = dx;
+          nearestCrumbDy = dy;
+        }
+
+        if (d < 250 && d > 5) {
+          const pull = crumb.strength * (250 - d) / 250;
           crumbPullX += (dx / d) * pull;
           crumbPullY += (dy / d) * pull;
           isAttracted = true;
         }
         if (d < 20) crumb.strength -= 0.03;
       });
+
+      // Long-range attraction to nearest crumb (weaker but farther)
+      if (crumbs.length > 0 && nearestCrumbDist > 250 && nearestCrumbDist < 600) {
+        const pull = 0.3 * (600 - nearestCrumbDist) / 600;
+        crumbPullX += (nearestCrumbDx / nearestCrumbDist) * pull;
+        crumbPullY += (nearestCrumbDy / nearestCrumbDist) * pull;
+        isAttracted = true;
+      }
 
       if (isAttracted) {
         boid.isResting = false;
