@@ -238,13 +238,13 @@
       }
     }
 
-    // Draw crumbs
+    // Draw crumbs as ASCII
+    const crumbChars = '✦*°·';
     crumbs.forEach(crumb => {
       ctx.fillStyle = '#d4a24a';
-      ctx.globalAlpha = crumb.strength * 0.8;
-      ctx.beginPath();
-      ctx.arc(crumb.x, crumb.y, 3 + crumb.strength * 2, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.globalAlpha = crumb.strength * 0.9;
+      const charIdx = Math.min(Math.floor((1 - crumb.strength) * crumbChars.length), crumbChars.length - 1);
+      ctx.fillText(crumbChars[charIdx], crumb.x, crumb.y);
     });
 
     ctx.globalAlpha = 1;
