@@ -315,6 +315,16 @@
     });
 
     ctx.globalAlpha = 1;
+
+    // Population counter - subtle, top right
+    ctx.fillStyle = '#ffcc00';
+    ctx.globalAlpha = 0.4;
+    ctx.font = '10px JetBrains Mono';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'top';
+    ctx.fillText(boids.length, w - 12, 12);
+    ctx.globalAlpha = 1;
+
     requestAnimationFrame(draw);
   }
 
