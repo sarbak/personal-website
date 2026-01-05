@@ -198,7 +198,7 @@
       let cohX = 0, cohY = 0, cohCount = 0;
       let isAttracted = false;
 
-      // Attract to crumbs
+      // Attract to crumbs and eat them
       let crumbPullX = 0, crumbPullY = 0;
       crumbs.forEach(crumb => {
         const dx = crumb.x - boid.x;
@@ -209,6 +209,10 @@
           crumbPullX += (dx / d) * pull;
           crumbPullY += (dy / d) * pull;
           isAttracted = true;
+        }
+        // Eat crumb when close
+        if (d < 15) {
+          crumb.strength -= 0.02;
         }
       });
 
@@ -367,7 +371,7 @@
     return `rgb(${r},${g},${b})`;
   }
 
-  function drawPanel(ctx, density, w) {
+  function drawPanel(ctx, density, w, isLeft) {
     ctx.clearRect(0, 0, w, h);
     ctx.font = FONT;
     ctx.textAlign = 'center';
@@ -388,13 +392,33 @@
         }
       }
     }
+
+    // Draw crumbs as yellow dots
+    crumbs.forEach(crumb => {
+      let crumbX = crumb.x;
+      // Check if crumb is in this panel
+      if (isLeft && crumbX < leftW) {
+        ctx.fillStyle = '#d4a24a';
+        ctx.globalAlpha = crumb.strength * 0.8;
+        ctx.beginPath();
+        ctx.arc(crumbX, crumb.y, 3 + crumb.strength * 2, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (!isLeft && crumbX >= leftW) {
+        ctx.fillStyle = '#d4a24a';
+        ctx.globalAlpha = crumb.strength * 0.8;
+        ctx.beginPath();
+        ctx.arc(crumbX - leftW, crumb.y, 3 + crumb.strength * 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+
     ctx.globalAlpha = 1;
   }
 
   function draw() {
     step();
-    drawPanel(leftCtx, leftDensity, leftW);
-    drawPanel(rightCtx, rightDensity, rightW);
+    drawPanel(leftCtx, leftDensity, leftW, true);
+    drawPanel(rightCtx, rightDensity, rightW, false);
     requestAnimationFrame(draw);
   }
 
