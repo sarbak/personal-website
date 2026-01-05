@@ -33,6 +33,9 @@
   // Mouse position in combined coordinate space
   let mouseX = -1000, mouseY = -1000;
 
+  // Crumbs left by mouse - boids are attracted to these
+  const crumbs = [];
+
   function resize() {
     const dpr = window.devicePixelRatio || 1;
 
@@ -152,11 +155,17 @@
       mouseY = -1000;
     }
 
-    // Detect movement to boost activity
+    // Detect movement to boost activity and drop crumbs
     if (mouseX >= 0) {
       const moved = Math.abs(mouseX - lastMouseX) + Math.abs(mouseY - lastMouseY);
       if (moved > 2) {
         mouseActivity = Math.min(1, mouseActivity + 0.15);
+        // Drop a crumb
+        if (moved > 8) {
+          crumbs.push({ x: mouseX, y: mouseY, strength: 1.0 });
+          // Limit crumb count
+          if (crumbs.length > 50) crumbs.shift();
+        }
       }
       lastMouseX = mouseX;
       lastMouseY = mouseY;
@@ -166,6 +175,14 @@
   function step() {
     // Decay mouse activity
     mouseActivity *= 0.985;
+
+    // Decay crumbs
+    for (let i = crumbs.length - 1; i >= 0; i--) {
+      crumbs[i].strength *= 0.995;
+      if (crumbs[i].strength < 0.01) {
+        crumbs.splice(i, 1);
+      }
+    }
 
     // Decay density
     for (let y = 0; y < ROWS; y++) {
@@ -179,23 +196,29 @@
       let sepX = 0, sepY = 0, sepCount = 0;
       let alignX = 0, alignY = 0, alignCount = 0;
       let cohX = 0, cohY = 0, cohCount = 0;
-      let isFleeing = false;
+      let isAttracted = false;
 
-      // Check for predator
-      if (mouseX >= 0 && mouseY >= 0 && mouseY < h) {
-        const predDx = boid.x - mouseX;
-        const predDy = boid.y - mouseY;
-        const predD = Math.sqrt(predDx * predDx + predDy * predDy);
-        if (predD < 180 && predD > 0) {
-          isFleeing = true;
-          boid.isResting = false;
-          const fleeFactor = (180 - predD) / 180;
-          boid.vx += (predDx / predD) * fleeFactor * 2.5;
-          boid.vy += (predDy / predD) * fleeFactor * 2.5;
+      // Attract to crumbs
+      let crumbPullX = 0, crumbPullY = 0;
+      crumbs.forEach(crumb => {
+        const dx = crumb.x - boid.x;
+        const dy = crumb.y - boid.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 200 && d > 5) {
+          const pull = crumb.strength * (200 - d) / 200;
+          crumbPullX += (dx / d) * pull;
+          crumbPullY += (dy / d) * pull;
+          isAttracted = true;
         }
+      });
+
+      if (isAttracted) {
+        boid.isResting = false;
+        boid.vx += crumbPullX * 0.03;
+        boid.vy += crumbPullY * 0.03;
       }
 
-      if (!isFleeing) {
+      {
         // Count nearby neighbors first
         let neighborCount = 0;
         boids.forEach(other => {
@@ -292,14 +315,14 @@
 
       // Speed limits
       const speed = Math.sqrt(boid.vx ** 2 + boid.vy ** 2);
-      const maxSpeed = isFleeing ? 4.0 : 0.6;
+      const maxSpeed = isAttracted ? 1.2 : 0.6;
       if (speed > maxSpeed) {
         boid.vx = (boid.vx / speed) * maxSpeed;
         boid.vy = (boid.vy / speed) * maxSpeed;
       }
 
-      // Gradual slowdown after fleeing
-      if (!isFleeing && speed > 0.7) {
+      // Gradual slowdown
+      if (!isAttracted && speed > 0.7) {
         boid.vx *= 0.97;
         boid.vy *= 0.97;
       }
