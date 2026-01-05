@@ -249,7 +249,7 @@
     for (let i = boids.length - 1; i >= 0; i--) {
       if (boids[i].energy <= 0) {
         boids.splice(i, 1);
-      } else if (boids[i].energy > 3.0 && Math.random() < 0.002 && boids.length < 150) {
+      } else if (boids[i].energy > 3.0 && Math.random() < 0.002 && boids.length < 300) {
         // Well-fed boids can reproduce
         const parent = boids[i];
         parent.energy -= 1.5;  // Cost of reproduction
