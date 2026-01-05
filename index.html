@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emre Şarbak – Building Convivial Systems</title>
+  <meta name="description" content="Emre Şarbak. 4x founder, ex-McKinsey. Building Emotion Machine in San Francisco. Interests: Human-AI interfaces, complex adaptive systems, urbanism.">
+  <meta name="author" content="Emre Şarbak">
+  <meta name="keywords" content="Emre Şarbak, Emre Sarbak, founder, entrepreneur, Emotion Machine, Patika, Kodluyoruz, AI, San Francisco">
+  <link rel="canonical" href="https://emresarbak.com">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://emresarbak.com">
+  <meta property="og:title" content="Emre Şarbak – Building Convivial Systems">
+  <meta property="og:description" content="4x founder, ex-McKinsey. Building Emotion Machine in San Francisco.">
+  <meta property="og:site_name" content="Emre Şarbak">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@emresarbak">
+  <meta name="twitter:creator" content="@emresarbak">
+  <meta name="twitter:title" content="Emre Şarbak – Building Convivial Systems">
+  <meta name="twitter:description" content="4x founder, ex-McKinsey. Building Emotion Machine in San Francisco.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Emre Şarbak",
+    "url": "https://emresarbak.com",
+    "sameAs": [
+      "https://x.com/emresarbak",
+      "https://www.linkedin.com/in/emresarbak/"
+    ],
+    "jobTitle": "Founder",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "Emotion Machine"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- Flocking background canvases -->
+  <canvas id="flock-left" class="flock-bg flock-left"></canvas>
+  <canvas id="flock-right" class="flock-bg flock-right"></canvas>
+
+  <main class="content">
+  <!-- Hero Section -->
+  <section class="hero">
+    <canvas id="ascii-canvas"></canvas>
+    <div class="hero-content">
+      <h1 class="hero-name">Emre Şarbak</h1>
+      <p class="hero-tagline">Building Convivial Systems</p>
+      <div class="hero-links">
+        <a href="https://x.com/emresarbak" target="_blank" rel="noopener">X/Twitter</a>
+        <a href="https://www.linkedin.com/in/emresarbak/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="mailto:emre.sarbak@gmail.com">Email</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About (commented out for now)
+  <section class="section about">
+    <p class="about-text">I've spent the last decade starting companies that try to make useful things more accessible—coding education, AI tools, learning platforms. Some worked, some didn't. Before that, I was at McKinsey. Currently working on <a href="https://www.emotionmachine.com" target="_blank" rel="noopener">Emotion Machine</a>.</p>
+  </section>
+  -->
+
+  <!-- Interests -->
+  <section class="section interests">
+    <h2 class="section-title">Interests</h2>
+    <p class="about-text">Building companies · Human-AI interfaces · Complex adaptive systems · Technology and economic history · Urbanism · Making fermented food · Weird aesthetics</p>
+  </section>
+
+  <!-- Personal -->
+  <section class="section personal">
+    <p class="about-text muted">From Turkey. Lived in St. Louis, then Boston, now San Francisco with my wife and daughter.</p>
+  </section>
+
+  <!-- Featured Projects -->
+  <section class="section ventures">
+    <h2 class="section-title">Featured Projects</h2>
+    <ul class="ventures-list">
+      <li class="venture-item">
+        <a href="https://www.emotionmachine.com" target="_blank" rel="noopener" class="venture-link">
+          <span class="venture-name">Emotion Machine</span>
+        </a>
+      </li>
+      <li class="venture-item">
+        <a href="https://www.patika.dev" target="_blank" rel="noopener" class="venture-link">
+          <span class="venture-name">Patika.dev</span>
+        </a>
+      </li>
+      <li class="venture-item">
+        <a href="https://www.risein.com" target="_blank" rel="noopener" class="venture-link">
+          <span class="venture-name">Rise In</span>
+        </a>
+      </li>
+      <li class="venture-item">
+        <a href="https://kodluyoruz.org" target="_blank" rel="noopener" class="venture-link">
+          <span class="venture-name">Kodluyoruz</span>
+        </a>
+      </li>
+      <li class="venture-item">
+        <a href="https://mediate.tech" target="_blank" rel="noopener" class="venture-link">
+          <span class="venture-name">Mediate</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Links Archive (loaded from links.json) -->
+  <section class="section">
+    <h2 class="section-title">Links</h2>
+    <div class="links-archive" id="links-archive"></div>
+  </section>
+  </main>
+
+  <script src="main.js"></script>
+  <script src="flock-bg.js"></script>
+</body>
+</html>
