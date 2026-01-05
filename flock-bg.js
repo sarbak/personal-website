@@ -85,9 +85,18 @@
       const moved = Math.abs(mouseX - lastMouseX) + Math.abs(mouseY - lastMouseY);
       if (moved > 2) {
         mouseActivity = Math.min(1, mouseActivity + 0.15);
-        if (moved > 8) {
-          crumbs.push({ x: mouseX, y: mouseY, strength: 1.0 });
-          if (crumbs.length > 50) crumbs.shift();
+        if (moved > 8 && cellW > 0) {
+          // Snap to grid
+          const gx = Math.floor(mouseX / cellW);
+          const gy = Math.floor(mouseY / cellH);
+          const snapX = gx * cellW + cellW / 2;
+          const snapY = gy * cellH + cellH / 2;
+          // Avoid duplicate crumbs at same cell
+          const exists = crumbs.some(c => c.gx === gx && c.gy === gy);
+          if (!exists) {
+            crumbs.push({ x: snapX, y: snapY, gx, gy, strength: 1.0 });
+            if (crumbs.length > 50) crumbs.shift();
+          }
         }
       }
       lastMouseX = mouseX;
