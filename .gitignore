@@ -1,3 +1,14 @@
 .envrc
 data/
 .DS_Store
+AGENTS.md
+agents.md
+API_V2_REFERENCE.md
+*.log
+.claude/
+.cursor/
+notes/
+scratch/
+TODO.md
+NOTES.md
+README.md
