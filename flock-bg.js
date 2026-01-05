@@ -21,6 +21,7 @@
   const COLS = 30;
   let ROWS, cellW, cellH;
   let density = [];
+  let warmth = [];  // Track which cells have attracted boids
 
   // Boids
   const boids = [];
@@ -49,12 +50,15 @@
     cellH = cellW;
     ROWS = Math.ceil(h / cellH);
 
-    // Reset density grid
+    // Reset density and warmth grids
     density = [];
+    warmth = [];
     for (let y = 0; y < ROWS; y++) {
       density[y] = [];
+      warmth[y] = [];
       for (let x = 0; x < COLS; x++) {
         density[y][x] = 0;
+        warmth[y][x] = 0;
       }
     }
   }
@@ -117,10 +121,11 @@
       if (crumbs[i].strength <= 0) crumbs.splice(i, 1);
     }
 
-    // Decay density
+    // Decay density and warmth
     for (let y = 0; y < ROWS; y++) {
       for (let x = 0; x < COLS; x++) {
         density[y][x] *= 0.92;
+        warmth[y][x] *= 0.95;
       }
     }
 
@@ -202,11 +207,14 @@
       if (boid.y < 0) boid.y += h;
       if (boid.y >= h) boid.y -= h;
 
-      // Add to density
+      // Add to density (and warmth if attracted)
       const gx = Math.floor(boid.x / cellW);
       const gy = Math.floor(boid.y / cellH);
       if (gx >= 0 && gx < COLS && gy >= 0 && gy < ROWS) {
         density[gy][gx] = Math.min(density[gy][gx] + 0.25, 1);
+        if (isAttracted) {
+          warmth[gy][gx] = Math.min(warmth[gy][gx] + 0.4, 1);
+        }
       }
     });
   }
@@ -239,7 +247,8 @@
         if (val > 0.03) {
           const charIdx = Math.min(Math.floor(val * chars.length), chars.length - 1);
           const colorIdx = Math.min(Math.floor(val * COLORS_NEUTRAL.length), COLORS_NEUTRAL.length - 1);
-          ctx.fillStyle = blendColors(COLORS_NEUTRAL[colorIdx], COLORS_WARM[colorIdx], mouseActivity);
+          const cellWarmth = warmth[y] ? warmth[y][x] || 0 : 0;
+          ctx.fillStyle = blendColors(COLORS_NEUTRAL[colorIdx], COLORS_WARM[colorIdx], cellWarmth);
           ctx.globalAlpha = Math.min(val * 1.5 + 0.3, 0.9);
           ctx.fillText(chars[charIdx], x * cellW + cellW / 2, y * cellH + cellH / 2);
         }
