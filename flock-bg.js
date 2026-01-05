@@ -112,10 +112,9 @@
 
     mouseActivity *= 0.985;
 
-    // Decay crumbs
+    // Remove fully eaten crumbs
     for (let i = crumbs.length - 1; i >= 0; i--) {
-      crumbs[i].strength *= 0.995;
-      if (crumbs[i].strength < 0.01) crumbs.splice(i, 1);
+      if (crumbs[i].strength <= 0) crumbs.splice(i, 1);
     }
 
     // Decay density
@@ -140,7 +139,7 @@
           crumbPullY += (dy / d) * pull;
           isAttracted = true;
         }
-        if (d < 15) crumb.strength -= 0.02;
+        if (d < 20) crumb.strength -= 0.03;
       });
 
       if (isAttracted) {
@@ -249,9 +248,9 @@
 
     // Draw crumbs as ASCII
     const crumbChars = '✦*°·';
+    ctx.fillStyle = '#d4a24a';
+    ctx.globalAlpha = 1;
     crumbs.forEach(crumb => {
-      ctx.fillStyle = '#d4a24a';
-      ctx.globalAlpha = crumb.strength * 0.9;
       const charIdx = Math.min(Math.floor((1 - crumb.strength) * crumbChars.length), crumbChars.length - 1);
       ctx.fillText(crumbChars[charIdx], crumb.x, crumb.y);
     });
