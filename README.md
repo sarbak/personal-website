@@ -1,13 +1,24 @@
 # emresarbak.com
 
-Personal website with flocking animation.
+Personal website with interactive flocking ecosystem.
 
 ## Features
 
-- Minimalist design with JetBrains Mono
-- Flocking boids animation on side panels
-- Mouse acts as predator, warm colors on movement
+- Minimalist left-aligned design with JetBrains Mono
+- ASCII flocking boids on the right panel
+- Mouse leaves crumbs that attract and feed the flock
+- Boids eat, grow, reproduce, and die (ecosystem simulation)
+- Bauhaus yellow coloring when boids smell food
+- Population counter in top right
 - Links loaded from `links.json` for easy updates
+
+## The Flock
+
+- Mouse movements leave ASCII crumbs on the grid
+- Boids are attracted to crumbs and eat them
+- Well-fed boids (energy > 3.0) can reproduce
+- Starving boids die (but population never drops below 20)
+- Population cap: 300
 
 ## Adding Links
 
@@ -34,3 +45,7 @@ Then open http://localhost:8000
 ## Deployment
 
 Hosted on GitHub Pages at https://emresarbak.com
+
+## Built With
+
+Claude Code (Opus 4.5)
