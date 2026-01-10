@@ -85,9 +85,8 @@
         vy: (Math.random() - 0.5) * 0.3,
         restTimer: Math.random() * 200,
         isResting: Math.random() > 0.5,
-        boredom: 0,
         wanderAngle: Math.random() * Math.PI * 2,
-        energy: 0.5 + Math.random() * 0.5  // Start with some energy
+        energy: 0.5 + Math.random() * 0.5
       });
     }
   }
@@ -273,7 +272,6 @@
           vy: (Math.random() - 0.5) * 0.3,
           restTimer: Math.random() * 200,
           isResting: false,
-          boredom: 0,
           wanderAngle: Math.random() * Math.PI * 2,
           energy: 0.8
         });

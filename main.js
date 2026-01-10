@@ -41,9 +41,7 @@
   const ctx = canvas.getContext('2d');
   const COLS = 40;
   const ROWS = 15;
-  const CHARS = ['─', '│', '╱', '╲', '·'];
 
-  let grid = [];
   let mx = -1000, my = -1000;
 
   function resize() {

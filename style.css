@@ -6,21 +6,18 @@
   --content-width: 500px;
 }
 
-/* System dark mode preference */
+/* Dark mode - system preference or manual toggle */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0a0a0a;
     --fg: #e5e5e5;
-    --muted: #888;
     --accent: #ffcc00;
   }
 }
 
-/* Manual dark mode override */
 [data-theme="dark"] {
   --bg: #0a0a0a;
   --fg: #e5e5e5;
-  --muted: #888;
   --accent: #ffcc00;
 }
 
