@@ -6,6 +6,24 @@
   --content-width: 500px;
 }
 
+/* System dark mode preference */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a0a0a;
+    --fg: #e5e5e5;
+    --muted: #888;
+    --accent: #ffcc00;
+  }
+}
+
+/* Manual dark mode override */
+[data-theme="dark"] {
+  --bg: #0a0a0a;
+  --fg: #e5e5e5;
+  --muted: #888;
+  --accent: #ffcc00;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -181,6 +199,27 @@ a:hover {
 .footer-note {
   font-size: 0.7rem;
   color: var(--muted);
+}
+
+/* Theme toggle */
+.theme-toggle {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+  z-index: 100;
+}
+
+.theme-toggle:hover {
+  opacity: 1;
+  color: var(--fg);
 }
 
 /* Mobile - hide flocking on small screens */

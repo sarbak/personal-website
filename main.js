@@ -1,4 +1,37 @@
 /**
+ * Theme toggle - auto-detects system preference, allows manual override
+ */
+(function() {
+  const toggle = document.querySelector('.theme-toggle');
+  const root = document.documentElement;
+
+  function getPreferredTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function setTheme(theme) {
+    root.setAttribute('data-theme', theme);
+    toggle.textContent = theme;
+    localStorage.setItem('theme', theme);
+  }
+
+  setTheme(getPreferredTheme());
+
+  toggle.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+      setTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+})();
+
+/**
  * ASCII flow field - lines follow mouse
  */
 (function() {
