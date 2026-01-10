@@ -2,11 +2,23 @@
  * Flocking background - right panel only (left-aligned layout)
  */
 (function() {
-  const FONT = '11px JetBrains Mono';
+  const FONT = '13px JetBrains Mono';
 
   // Color palettes - neutral and warm (Bauhaus yellow when attracted)
-  const COLORS_NEUTRAL = ['#bbb', '#999', '#777', '#555', '#444'];
-  const COLORS_WARM = ['#cca', '#cc9', '#ddaa00', '#eebb00', '#ffcc00'];
+  const COLORS_LIGHT = ['#666', '#555', '#444', '#333', '#222'];  // For light mode
+  const COLORS_DARK = ['#666', '#777', '#888', '#999', '#aaa'];   // For dark mode
+  const COLORS_WARM_LIGHT = ['#776', '#885', '#997', '#aa8', '#bb9'];
+  const COLORS_WARM_DARK = ['#887', '#998', '#aa9', '#bba', '#ccb'];
+
+  function getColors() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches &&
+       document.documentElement.getAttribute('data-theme') !== 'light');
+    return {
+      neutral: isDark ? COLORS_DARK : COLORS_LIGHT,
+      warm: isDark ? COLORS_WARM_DARK : COLORS_WARM_LIGHT
+    };
+  }
 
   // Mouse activity tracking
   let mouseActivity = 0;
@@ -126,7 +138,7 @@
     for (let y = 0; y < ROWS; y++) {
       for (let x = 0; x < COLS; x++) {
         density[y][x] *= 0.92;
-        warmth[y][x] *= 0.95;
+        warmth[y][x] *= 0.9;
       }
     }
 
@@ -239,7 +251,7 @@
       if (gx >= 0 && gx < COLS && gy >= 0 && gy < ROWS) {
         density[gy][gx] = Math.min(density[gy][gx] + 0.15 * boid.energy, 1);
         if (isAttracted) {
-          warmth[gy][gx] = Math.min(warmth[gy][gx] + 0.4, 1);
+          warmth[gy][gx] = Math.min(warmth[gy][gx] + 0.15, 0.6);
         }
       }
     });
@@ -291,16 +303,17 @@
     ctx.textBaseline = 'middle';
 
     const chars = ' .·:∘∙°˚*✦~';
+    const colors = getColors();
 
     for (let y = 0; y < ROWS; y++) {
       for (let x = 0; x < COLS; x++) {
         const val = density[y][x];
         if (val > 0.03) {
           const charIdx = Math.min(Math.floor(val * chars.length), chars.length - 1);
-          const colorIdx = Math.min(Math.floor(val * COLORS_NEUTRAL.length), COLORS_NEUTRAL.length - 1);
+          const colorIdx = Math.min(Math.floor(val * colors.neutral.length), colors.neutral.length - 1);
           const cellWarmth = warmth[y] ? warmth[y][x] || 0 : 0;
-          ctx.fillStyle = blendColors(COLORS_NEUTRAL[colorIdx], COLORS_WARM[colorIdx], cellWarmth);
-          ctx.globalAlpha = Math.min(val * 1.5 + 0.3, 0.9);
+          ctx.fillStyle = blendColors(colors.neutral[colorIdx], colors.warm[colorIdx], cellWarmth);
+          ctx.globalAlpha = Math.min(val * 1.5 + 0.5, 1.0);
           ctx.fillText(chars[charIdx], x * cellW + cellW / 2, y * cellH + cellH / 2);
         }
       }
