@@ -5,10 +5,11 @@ Personal website with interactive flocking ecosystem.
 ## Features
 
 - Minimalist left-aligned design with JetBrains Mono
+- Dark mode with auto system detection (toggle in bottom right)
 - ASCII flocking boids on the right panel
 - Mouse leaves crumbs that attract and feed the flock
 - Boids eat, grow, reproduce, and die (ecosystem simulation)
-- Bauhaus yellow coloring when boids smell food
+- Theme-aware colors (adapts to light/dark mode)
 - Population counter in top right
 - Links loaded from `links.json` for easy updates
 
@@ -16,8 +17,9 @@ Personal website with interactive flocking ecosystem.
 
 - Mouse movements leave ASCII crumbs on the grid
 - Boids are attracted to crumbs and eat them
-- Well-fed boids (energy > 3.0) can reproduce
+- Well-fed boids (energy > 2.0) can reproduce
 - Starving boids die (but population never drops below 20)
+- Population swings are visible based on feeding activity
 - Population cap: 300
 
 ## Adding Links
