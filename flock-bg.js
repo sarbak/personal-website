@@ -170,7 +170,7 @@
         }
         if (d < 20) {
           crumb.strength -= 0.03;
-          boid.energy = Math.min(boid.energy + 0.15, 5.0);  // Gain energy from eating
+          boid.energy = Math.min(boid.energy + 0.25, 5.0);  // Gain energy from eating
         }
       });
 
@@ -242,8 +242,8 @@
       if (boid.y < 0) boid.y += h;
       if (boid.y >= h) boid.y -= h;
 
-      // Slowly lose energy
-      boid.energy -= 0.0003;
+      // Lose energy over time (starve without food)
+      boid.energy -= 0.001;
 
       // Add to density based on energy (and warmth if attracted)
       const gx = Math.floor(boid.x / cellW);
@@ -262,10 +262,10 @@
       if (boids[i].energy <= 0 && boids.length > 20) {
         // Only die if population is above minimum
         boids.splice(i, 1);
-      } else if (boids[i].energy > 3.0 && Math.random() < 0.002 && boids.length < 300) {
+      } else if (boids[i].energy > 2.0 && Math.random() < 0.01 && boids.length < 300) {
         // Well-fed boids can reproduce
         const parent = boids[i];
-        parent.energy -= 1.5;  // Cost of reproduction
+        parent.energy -= 1.0;  // Cost of reproduction
         newBoids.push({
           x: parent.x + (Math.random() - 0.5) * 20,
           y: parent.y + (Math.random() - 0.5) * 20,
