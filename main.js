@@ -131,7 +131,7 @@
 
         a.appendChild(document.createTextNode(link.title));
 
-        if (link.url !== '#') {
+        if (link.url !== '#' && !link.url.startsWith('/')) {
           a.target = '_blank';
           a.rel = 'noopener';
         }

@@ -187,6 +187,25 @@ a:hover {
   margin-right: 0.4rem;
 }
 
+/* Research questions */
+.research-questions {
+  list-style: none;
+  font-size: 0.85rem;
+}
+
+.research-questions li {
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.research-questions li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+}
+
 /* Footer */
 .footer {
   margin-top: 3rem;
