@@ -9,6 +9,7 @@
     gtag('js', new Date());
     gtag('config', 'G-W893BE5C9T');
   </script>
+  <script src="analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👋</text></svg>">
@@ -57,7 +58,7 @@
   }
   </script>
 </head>
-<body>
+<body data-page="home">
   <!-- Flocking background canvases -->
   <canvas id="flock-left" class="flock-bg flock-left"></canvas>
   <canvas id="flock-right" class="flock-bg flock-right"></canvas>
@@ -70,15 +71,15 @@
       <h1 class="hero-name">Emre Şarbak</h1>
       <p class="hero-tagline">Building Convivial Systems</p>
       <div class="hero-links">
-        <a href="https://x.com/emresarbak" target="_blank" rel="noopener">X/Twitter</a>
-        <a href="https://www.linkedin.com/in/emresarbak/" target="_blank" rel="noopener">LinkedIn</a>
-        <a href="mailto:emre.sarbak@gmail.com">Email</a>
+        <a href="https://x.com/emresarbak" target="_blank" rel="noopener" data-ph-event="social link clicked" data-ph-context="x" data-ph-location="hero">X/Twitter</a>
+        <a href="https://www.linkedin.com/in/emresarbak/" target="_blank" rel="noopener" data-ph-event="social link clicked" data-ph-context="linkedin" data-ph-location="hero">LinkedIn</a>
+        <a href="mailto:emre.sarbak@gmail.com" data-ph-event="contact link clicked" data-ph-context="email" data-ph-location="hero">Email</a>
       </div>
     </div>
   </section>
 
   <section class="section about">
-    <p class="about-text">I've spent the last decade making technology careers more accessible. The organizations I helped to build (<a href="https://www.launchcode.org" target="_blank" rel="noopener">LaunchCode</a>, <a href="https://kodluyoruz.org" target="_blank" rel="noopener">Kodluyoruz</a>, <a href="https://www.patika.dev" target="_blank" rel="noopener">Patika.dev</a>, <a href="https://www.risein.com" target="_blank" rel="noopener">Rise In</a>) helped 5,000+ people switch into coding careers. Before that, I was at McKinsey. Now I'm running <a href="/research.html">a study on AI-enabled entrepreneurship and small business ownership</a>.</p>
+    <p class="about-text">I've spent the last decade making technology careers more accessible. The organizations I helped to build (<a href="https://www.launchcode.org" target="_blank" rel="noopener">LaunchCode</a>, <a href="https://kodluyoruz.org" target="_blank" rel="noopener">Kodluyoruz</a>, <a href="https://www.patika.dev" target="_blank" rel="noopener">Patika.dev</a>, <a href="https://www.risein.com" target="_blank" rel="noopener">Rise In</a>) helped 5,000+ people switch into coding careers. Before that, I was at McKinsey. Now I'm running <a href="/research.html" data-ph-event="study link clicked" data-ph-context="about" data-ph-location="bio">a study on AI-enabled entrepreneurship and small business ownership</a>.</p>
   </section>
 
   <!-- Interests -->
@@ -97,27 +98,27 @@
     <h2 class="section-title">Featured Projects</h2>
     <ul class="ventures-list">
       <li class="venture-item">
-        <a href="https://www.emotionmachine.com" target="_blank" rel="noopener" class="venture-link">
+        <a href="https://www.emotionmachine.com" target="_blank" rel="noopener" class="venture-link" data-ph-event="project link clicked" data-ph-context="emotion-machine" data-ph-location="featured-projects">
           <span class="venture-name">Emotion Machine</span>
         </a>
       </li>
       <li class="venture-item">
-        <a href="https://www.patika.dev" target="_blank" rel="noopener" class="venture-link">
+        <a href="https://www.patika.dev" target="_blank" rel="noopener" class="venture-link" data-ph-event="project link clicked" data-ph-context="patika" data-ph-location="featured-projects">
           <span class="venture-name">Patika.dev</span>
         </a>
       </li>
       <li class="venture-item">
-        <a href="https://www.risein.com" target="_blank" rel="noopener" class="venture-link">
+        <a href="https://www.risein.com" target="_blank" rel="noopener" class="venture-link" data-ph-event="project link clicked" data-ph-context="rise-in" data-ph-location="featured-projects">
           <span class="venture-name">Rise In</span>
         </a>
       </li>
       <li class="venture-item">
-        <a href="https://kodluyoruz.org" target="_blank" rel="noopener" class="venture-link">
+        <a href="https://kodluyoruz.org" target="_blank" rel="noopener" class="venture-link" data-ph-event="project link clicked" data-ph-context="kodluyoruz" data-ph-location="featured-projects">
           <span class="venture-name">Kodluyoruz</span>
         </a>
       </li>
       <li class="venture-item">
-        <a href="https://mediate.tech" target="_blank" rel="noopener" class="venture-link">
+        <a href="https://mediate.tech" target="_blank" rel="noopener" class="venture-link" data-ph-event="project link clicked" data-ph-context="mediate" data-ph-location="featured-projects">
           <span class="venture-name">Mediate</span>
         </a>
       </li>

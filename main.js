@@ -1,9 +1,75 @@
+function getPageContext() {
+  return {
+    page_key: document.body?.dataset.page || 'unknown',
+    page_path: window.location.pathname
+  };
+}
+
+function normalizeText(text) {
+  return (text || '').replace(/\s+/g, ' ').trim();
+}
+
+function getLinkKind(href) {
+  if (!href) return 'unknown';
+  if (href.startsWith('mailto:')) return 'email';
+  if (href.startsWith('tel:')) return 'phone';
+  if (href.startsWith('#')) return 'anchor';
+
+  try {
+    const url = new URL(href, window.location.origin);
+    return url.origin === window.location.origin ? 'internal' : 'external';
+  } catch (error) {
+    return 'unknown';
+  }
+}
+
+function getAbsoluteUrl(href) {
+  if (!href) return '';
+
+  try {
+    return new URL(href, window.location.origin).toString();
+  } catch (error) {
+    return href;
+  }
+}
+
+function capturePostHog(eventName, properties = {}) {
+  if (!eventName || !window.posthog || typeof window.posthog.capture !== 'function') return;
+
+  const payload = { ...getPageContext(), ...properties };
+  const cleanedPayload = Object.fromEntries(
+    Object.entries(payload).filter(([, value]) => value !== undefined && value !== null && value !== '')
+  );
+
+  window.posthog.capture(eventName, cleanedPayload);
+}
+
+/**
+ * Capture business-meaningful link clicks without duplicating every anchor.
+ */
+(function() {
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[data-ph-event]');
+    if (!link) return;
+
+    const href = link.getAttribute('href') || '';
+    capturePostHog(link.dataset.phEvent, {
+      link_text: normalizeText(link.textContent),
+      link_url: getAbsoluteUrl(href),
+      link_kind: getLinkKind(href),
+      link_context: link.dataset.phContext,
+      link_location: link.dataset.phLocation
+    });
+  });
+})();
+
 /**
  * Theme toggle - auto-detects system preference, allows manual override
  */
 (function() {
   const toggle = document.querySelector('.theme-toggle');
   const root = document.documentElement;
+  if (!toggle) return;
 
   function getPreferredTheme() {
     const saved = localStorage.getItem('theme');
@@ -21,7 +87,12 @@
 
   toggle.addEventListener('click', () => {
     const current = root.getAttribute('data-theme');
-    setTheme(current === 'dark' ? 'light' : 'dark');
+    const next = current === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    capturePostHog('theme changed', {
+      from_theme: current,
+      to_theme: next
+    });
   });
 
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
@@ -121,6 +192,9 @@
         const a = document.createElement('a');
         a.href = link.url;
         a.className = 'archive-link';
+        a.dataset.phEvent = 'archive link clicked';
+        a.dataset.phContext = link.tag || 'archive';
+        a.dataset.phLocation = 'links archive';
 
         if (link.tag) {
           const tag = document.createElement('span');

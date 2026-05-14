@@ -9,6 +9,7 @@
     gtag('js', new Date());
     gtag('config', 'G-W893BE5C9T');
   </script>
+  <script src="analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👋</text></svg>">
@@ -94,7 +95,7 @@
     }
   </style>
 </head>
-<body>
+<body data-page="essay">
   <!-- Flocking background canvases -->
   <canvas id="flock-left" class="flock-bg flock-left"></canvas>
   <canvas id="flock-right" class="flock-bg flock-right"></canvas>
@@ -102,7 +103,7 @@
   <main class="content">
 
   <nav class="section" style="margin-bottom: 1rem;">
-    <a href="/" style="font-size: 0.75rem; color: var(--muted);">&larr; emresarbak.com</a>
+    <a href="/" style="font-size: 0.75rem; color: var(--muted);" data-ph-event="navigation link clicked" data-ph-context="home" data-ph-location="top-nav">&larr; emresarbak.com</a>
   </nav>
 
   <section class="hero" style="min-height: auto; margin-bottom: 2rem;">
@@ -204,10 +205,10 @@
 
   <section class="section" style="margin-top: 3rem;">
     <p class="about-text muted">
-      <a href="https://x.com/emresarbak" target="_blank" rel="noopener">X/Twitter</a> ·
-      <a href="https://www.linkedin.com/in/emresarbak/" target="_blank" rel="noopener">LinkedIn</a> ·
-      <a href="mailto:emre.sarbak@gmail.com">Email</a> ·
-      <a href="/">Home</a>
+      <a href="https://x.com/emresarbak" target="_blank" rel="noopener" data-ph-event="social link clicked" data-ph-context="x" data-ph-location="footer">X/Twitter</a> ·
+      <a href="https://www.linkedin.com/in/emresarbak/" target="_blank" rel="noopener" data-ph-event="social link clicked" data-ph-context="linkedin" data-ph-location="footer">LinkedIn</a> ·
+      <a href="mailto:emre.sarbak@gmail.com" data-ph-event="contact link clicked" data-ph-context="email" data-ph-location="footer">Email</a> ·
+      <a href="/" data-ph-event="navigation link clicked" data-ph-context="home" data-ph-location="footer">Home</a>
     </p>
   </section>
 
@@ -217,28 +218,7 @@
 
   <button class="theme-toggle" aria-label="Toggle theme">light</button>
 
-  <script>
-    // Theme toggle (same as main site)
-    (function() {
-      const toggle = document.querySelector('.theme-toggle');
-      const root = document.documentElement;
-      function getPreferredTheme() {
-        const saved = localStorage.getItem('theme');
-        if (saved) return saved;
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      }
-      function setTheme(theme) {
-        root.setAttribute('data-theme', theme);
-        toggle.textContent = theme;
-        localStorage.setItem('theme', theme);
-      }
-      setTheme(getPreferredTheme());
-      toggle.addEventListener('click', () => {
-        const current = root.getAttribute('data-theme');
-        setTheme(current === 'dark' ? 'light' : 'dark');
-      });
-    })();
-  </script>
+  <script src="main.js"></script>
   <script src="flock-bg.js"></script>
 </body>
 </html>
